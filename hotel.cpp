@@ -1,14 +1,17 @@
 #include<iostream>
 #include<fstream>
 using namespace std;
-void initializeHotel(int **rooms,int *roomPerFloor,int &floor ){
+void initializeHotel(int **rooms,int *roomsPerFloor,int &floors ){
     cout<<"Enter total number of Floor: ";
-    cin>>floor;
+    cin>>floors;
+    roomsPerFloor = new int [floors];
+    rooms = new int*[floors];
     int i,j;
-    for(i=0;i<floor;i++){
+    for(i=0;i<floors;i++){
         cout<<"Enter room for floor "<< i << ": ";
-        cin>>roomPerFloor[i];
-        for(j=0;j<roomPerFloor[i];j++)
+        cin>>roomsPerFloor[i];
+        rooms[i] = new int[roomsPerFloor[i]];
+        for(j=0;j<roomsPerFloor[i];j++)
             rooms[i][j] = 0;
     }
         
@@ -24,7 +27,7 @@ void loadHotelData(int** rooms,  int *roomsPerFloor,int floors, const char* file
     }
 }
 //  Save room occupancy back to a file before program exit.
-void saveHotelData(int** rooms, int floors, int *roomsPerFloor, const char* filename){
+void saveHotelData(int** rooms, int *roomsPerFloor, int floors, const char* filename){
       ofstream out(filename);
       out<<floors;
       out<<"\n";
@@ -36,12 +39,48 @@ void saveHotelData(int** rooms, int floors, int *roomsPerFloor, const char* file
       }
 }
 
-
-void displayHotelStatus(int** rooms, int floors, int roomsPerFloor);
 // → Display all floors and rooms with their occupancy status.
 
-void resetHotel(int** rooms, int floors, int roomsPerFloor);
+void displayHotelStatus(int** rooms, int *roomsPerFloor, int floors){
+    int i,j,tfree=0,toccup=0,room=0;
+    cout<<"Our Hotel has total "<<floors<<" floors"<<endl;
+    for(i=0;i<floors;i++){
+        int free=0,occup=0;
+        cout<<"Floor "<<i+1<<": "<<endl;
+        cout<<"Total Rooms on this Floor: "<<roomsPerFloor[i]<<endl;
+        for(j=0;j<roomsPerFloor[i];j++){
+            cout<<"Room "<<j+1<<": ";
+            if(rooms[i][j]){
+                cout<<"Occupied\t";
+                occup++;
+            }
+            else{
+                cout<<"Free\t";
+                free++;
+            }
+            room++;
+        }
+        tfree+=free;
+        toccup+=occup;
+        cout<<"Total Free Rooms on this floor: "<<free<<endl;
+        cout<<"Total Occupied Rooms on this floor: "<<occup<<endl;
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"Total rooms in hotel: "<<room<<endl;
+    cout<<"Total free Rooms in hotel: "<<tfree<<endl;
+    cout<<"Total occupied Rooms in hotel: "<<toccup<<endl;
+}
 // → Mark all rooms as free.
+void resetHotel(int** rooms, int *roomsPerFloor, int floors){
+    int i,j;
+    for(i=0;i<floors;i++){
+        for(j=0;j<roomsPerFloor[i];i++)
+            rooms[i][j] = 0;
+    }
+
+}
+
 int main(){
       int **rooms;
       int *roomsPerFloor;
